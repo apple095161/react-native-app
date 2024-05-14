@@ -15,7 +15,30 @@ type Style = {
   fontFolorWhite: TextStyle;
   weaterImg: ImageStyle;
 };
+import React, { useEffect, useState } from "react";
+interface weatherType {
+  mainWeather: string;
+  weather: any[];
+}
 export default function DayWeaterLayout() {
+  const [weatherList, setWeatherList] = useState({
+    mainWeather: "",
+    weather: [],
+  } as weatherType);
+  useEffect(() => {
+    getWeather();
+  }, []);
+  const getWeather = () => {
+    fetch("../assets/mock/dayWeather.json")
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json);
+        setWeatherList(json);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
   return (
     <View
       style={{
@@ -38,25 +61,43 @@ export default function DayWeaterLayout() {
             padding: 10,
           }}
         >
-          預計下午3點晴時多雲。
+          {weatherList.mainWeather}
         </Text>
       </View>
       <ScrollView
         horizontal
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 15 }}
-        showsHorizontalScrollIndicator={true}
       >
-        <View style={styles.dayWarter}>
-          <Text style={[styles.fontSizeWrap, styles.fontFolorWhite]}>現在</Text>
-          <Image
-            source={require("../../assets/images/heavyrain.png")}
-            style={styles.weaterImg}
-          ></Image>
-          <Text style={[styles.fontSizeWrap, styles.fontFolorWhite]}>
-            23&#176;
-          </Text>
-        </View>
-        <View style={styles.dayWarter}>
+        {weatherList.weather.map((item, i) => {
+          return (
+            <View style={styles.dayWarter} key={i}>
+              <Text style={[styles.fontSizeWrap, styles.fontFolorWhite]}>
+                {item.time}
+              </Text>
+              {item.status === "sun" ? (
+                <Image
+                  source={require("../../assets/images/sun.png")}
+                  style={styles.weaterImg}
+                ></Image>
+              ) : item.status === "cloud" ? (
+                <Image
+                  source={require("../../assets/images/cloud.png")}
+                  style={styles.weaterImg}
+                ></Image>
+              ) : (
+                <Image
+                  source={require("../../assets/images/mist.png")}
+                  style={styles.weaterImg}
+                ></Image>
+              )}
+              <Text style={[styles.fontSizeWrap, styles.fontFolorWhite]}>
+                {item.temp}&#176;
+              </Text>
+            </View>
+          );
+        })}
+        {/* <View style={styles.dayWarter}>
           <Text style={[styles.fontSizeWrap, styles.fontFolorWhite]}>現在</Text>
           <Image
             source={require("../../assets/images/sun.png")}
@@ -95,7 +136,7 @@ export default function DayWeaterLayout() {
           <Text style={[styles.fontSizeWrap, styles.fontFolorWhite]}>
             23&#176;
           </Text>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );
