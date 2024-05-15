@@ -185,7 +185,7 @@ export default function Home() {
           >
             <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
               高雄市,
-              <Text style={{ color: "white" }}>燕巢區</Text>
+              <Text style={{ color: "white" }}>前鎮區</Text>
             </Text>
           </View>
           <View>

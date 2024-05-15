@@ -21,13 +21,29 @@ interface weatherType {
   weather: any[];
 }
 export default function DayWeaterLayout() {
+  const [mainweather, setMainweather] = useState("");
   const [weatherList, setWeatherList] = useState({
     mainWeather: "",
     weather: [],
   } as weatherType);
   useEffect(() => {
+    getMain();
     getWeather();
   }, []);
+  const getMain = () => {
+    fetch(
+      "	https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/F-C0032-017?Authorization=rdec-key-123-45678-011121314&format=JSON"
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        setMainweather(
+          json.cwaopendata.dataset.parameterSet.parameter[0].parameterValue
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
   const getWeather = () => {
     fetch("../assets/mock/dayWeather.json")
       .then((response) => response.json())
@@ -61,7 +77,7 @@ export default function DayWeaterLayout() {
             padding: 10,
           }}
         >
-          {weatherList.mainWeather}
+          {mainweather}
         </Text>
       </View>
       <ScrollView
