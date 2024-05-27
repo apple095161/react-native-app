@@ -14,5 +14,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "components/home/welcome.style.js", "components/weater/dayWeater.tsx"  ]
+, "components/home/welcome.style.js", "components/weater/dayWeater.tsx", "app/HomeFooter.jsx"  ]
 }

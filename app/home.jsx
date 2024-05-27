@@ -1,4 +1,3 @@
-import { NavigationContainer } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -14,7 +13,9 @@ import { Link } from "expo-router";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { getCurrencies, getCountry } from "react-native-localize";
 import DayWeaterLayout from "../components/weater/dayWeater";
-
+import Icons from "react-native-vector-icons/FontAwesome";
+import * as Location from "expo-location";
+import Burger from "./burger";
 export default function Home() {
   const [text, onChangeText] = useState("");
   const [location, setLocation] = useState([1, 2, 3, 4]);
@@ -55,17 +56,60 @@ export default function Home() {
       temperature: "25",
     },
   ]);
+  const [status, setStatus] = useState([
+    {
+      status: "sun",
+      descript: "風速27",
+      icon: "sun-o",
+    },
+    {
+      status: "moon",
+      descript: "太陽",
+      icon: "moon-o",
+    },
+    {
+      status: "umbrella",
+      descript: "下雨",
+      icon: "umbrella",
+    },
+  ]);
   const [showSearch, setShowSearch] = useState(false);
   const onPress = () => {
     setShowSearch(!showSearch);
   };
-  const click = (i) => {
-    console.log(i);
-  };
+  const clickEmit = (i) => {};
   useEffect(() => {
-    console.log(getCountry());
     handlePress();
+    getLocation();
   });
+  const getLocation = async () => {
+    try {
+      // let status = await Location.requestForegroundPermissionsAsync();
+      let { coords } = await Location.getCurrentPositionAsync();
+      const myPosition = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${22.6542609},${
+          coords.longitude
+        }&key=AIzaSyBuqwu7n7hZr3xMpZjw7IjkDltplqyANYk`
+      )
+        .then((response) => response.json())
+        .then((json) => {
+          console.log(json);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      console.log(coords);
+
+      // if (status !== "granted") {
+      //   setLocationError("Location permission denied");
+      //   return;
+      // }
+      // let location = await Location.getCurrentPositionAsync({});
+      // fetchWeatherData(location.coords.latitude, location.coords.longitude);
+    } catch (error) {
+      console.error("Error requesting location permission:", error);
+    }
+  };
   const handlePress = () => {
     fetch(
       "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-067?Authorization=rdec-key-123-45678-011121314"
@@ -81,17 +125,12 @@ export default function Home() {
       });
   };
   return (
-    //   <NavigationContainer>
-    //   <Tab.Navigator>
-    //     <Tab.Screen name="Home" component={HomeScreen} />
-    //     <Tab.Screen name="Settings" component={SettingsScreen} />
-    //   </Tab.Navigator>
-    // </NavigationContainer>
-    <View style={{ paddingBottom: "15px" }}>
+    <View style={{ paddingBottom: "15px", paddingTop: "110px" }}>
       {/* <StatusBar></StatusBar> */}
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, paddingTop: "30px" }}>
         <ScrollView showsHorizontalScrollIndicator={false}>
-          <View
+          {/* <Burger /> */}
+          {/* <View
             style={{
               height: "7%",
               marginTop: "10px",
@@ -175,7 +214,7 @@ export default function Home() {
             ) : (
               ""
             )}
-          </View>
+          </View> */}
           <View
             style={{
               display: "flex",
@@ -212,57 +251,151 @@ export default function Home() {
               多雲
             </Text>
           </View>
-
+          {/* {dat()} */}
           <View
             style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
+              padding: "10px",
+              opacity: 0.8,
+              marginBottom: "10px",
             }}
           >
             <View
               style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: "10px",
+                backgroundColor: "rgba(20, 34, 70, 1.0)",
+                paddingTop: 50,
+                paddingBottom: 50,
+                paddingLeft: 20,
+                paddingRight: 20,
               }}
             >
-              <Image
-                source={"../assets/icon/sun.png"}
-                style={{ width: "20px", height: "20px", marginRight: "10px" }}
-              ></Image>
-              <Text style={{ color: "white" }}>早上8:00</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: "15px",
+                  marginLeft: "15px",
+                  flexWrap: "wrap",
+                }}
+              >
+                {status.map((item, i) => {
+                  return (
+                    <View key={i} style={{ width: "50%" }}>
+                      <View
+                        style={{
+                          borderBottomColor: "#606682",
+                          borderBottomWidth: 1,
+                          borderRightWidth: (i + 1) % 2 > 0 ? 1 : 0,
+                          borderRightColor: "#606682",
+                          padding: 20,
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Icons name={item.icon} size={30} color="white" />
+                        <Text style={{ color: "white" }}>{item.descript}</Text>
+                      </View>
+                    </View>
+                  );
+                })}
+                {/* 
+                <View style={{ width: "50%" }}>
+                  <View
+                    style={{
+                      borderBottomColor: "#606682",
+                      borderBottomWidth: 1,
+                      padding: 20,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icons name="moon-o" size={30} color="white" />
+                    <Text style={{ color: "white" }}>早上8:00</Text>
+                  </View>
+                </View>
+                <View style={{ width: "50%" }}>
+                  <View
+                    style={{
+                      borderBottomColor: "#606682",
+                      borderBottomWidth: 1,
+                      padding: 20,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icons name="moon-o" size={30} color="white" />
+                    <Text style={{ color: "white" }}>早上8:00</Text>
+                  </View>
+                </View> */}
+                {/* <View style={{ width: "50%" }}>
+                  <View
+                    style={{
+                      borderBottomColor: "#606682",
+                      borderBottomWidth: 1,
+                      padding: 20,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icons name="moon-o" size={30} color="white" />
+                    <Text style={{ color: "white" }}>早上8:00</Text>
+                  </View>
+                </View> */}
+              </View>
+              {/* <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginRight: "15px",
+                  marginLeft: "15px",
+                }}
+              >
+                <View style={{ width: "50%" }}>
+                  <View
+                    style={{
+                      borderBottomColor: "#606682",
+                      borderBottomWidth: 1,
+                      borderRightWidth: 1,
+                      borderRightColor: "#606682",
+                      padding: 20,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icons name="location-arrow" size={30} color="white" />
+                    <Text style={{ color: "white" }}>22風速</Text>
+                  </View>
+                </View>
+                <View style={{ width: "50%" }}>
+                  <View
+                    style={{
+                      borderBottomColor: "#606682",
+                      borderBottomWidth: 1,
+                      padding: 20,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icons name="umbrella" size={30} color="white" />
+                    <Text style={{ color: "white" }}>早上8:00</Text>
+                  </View>
+                </View>
+              </View> */}
             </View>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: "10px",
-              }}
-            >
-              {/* <Icon name="map-marker" size={20} color="gray" /> */}
-              <Image
-                source={"../assets/icon/wind.png"}
-                style={{ width: "20px", height: "20px", marginRight: "10px" }}
-              ></Image>
-              <Text style={{ color: "white" }}>22風速</Text>
-            </View>
-          </View>
-          <View
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              source={require("../assets/images/cloud.png")}
-              style={{ width: "300px", height: "300px" }}
-            ></Image>
           </View>
           <View style={{ padding: "10px", opacity: 0.8 }}>
             <DayWeaterLayout></DayWeaterLayout>
@@ -332,32 +465,6 @@ export default function Home() {
                     </View>
                   );
                 })}
-
-                {/* <View style={styles.dailyWarter}>
-                            <Image source={require('../assets/images/sun.png')} style={{ width: '30px', height: '30px', marginBottom: '5px' }}></Image>
-                            <Text style={styles.fontSizeWrap}>星期二</Text>
-                            <Text style={styles.fontSizeWrap2}>28&#176;</Text>
-                        </View>
-                        <View style={styles.dailyWarter}>
-                            <Image source={require('../assets/images/heavyrain.png')} style={{ width: '30px', height: '30px', marginBottom: '5px' }}></Image>
-                            <Text style={styles.fontSizeWrap}>星期三</Text>
-                            <Text style={styles.fontSizeWrap2}>30&#176;</Text>
-                        </View>
-                        <View style={styles.dailyWarter}>
-                            <Image source={require('../assets/images/heavyrain.png')} style={{ width: '30px', height: '30px', marginBottom: '5px' }}></Image>
-                            <Text style={styles.fontSizeWrap}>星期四</Text>
-                            <Text style={styles.fontSizeWrap2}>30&#176;</Text>
-                        </View>
-                        <View style={styles.dailyWarter}>
-                            <Image source={require('../assets/images/cloud.png')} style={{ width: '30px', height: '30px', marginBottom: '5px' }}></Image>
-                            <Text style={styles.fontSizeWrap}>星期五</Text>
-                            <Text style={styles.fontSizeWrap2}>16&#176;</Text>
-                        </View>
-                        <View style={styles.dailyWarter}>
-                            <Image source={require('../assets/images/cloud.png')} style={{ width: '30px', height: '30px', marginBottom: '5px' }}></Image>
-                            <Text style={styles.fontSizeWrap}>星期六</Text>
-                            <Text style={styles.fontSizeWrap2}>18&#176;</Text>
-                        </View> */}
               </ScrollView>
             </View>
           </View>
@@ -368,6 +475,124 @@ export default function Home() {
     </View>
   );
 }
+
+const dat = () => {
+  return (
+    <View>
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Image
+          source={require("../assets/images/cloud.png")}
+          style={{ width: "300px", height: "300px" }}
+        ></Image>
+      </View>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          paddingRight: "20px",
+          paddingLeft: "20px",
+          marginBottom: "10px",
+        }}
+      >
+        <View
+          style={{
+            width: "50%",
+            display: "flex",
+            height: 100,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgb(46, 115, 184)",
+            marginRight: "5px",
+            borderRadius: "15px",
+          }}
+        >
+          <Image
+            source={"../assets/icon/sun.png"}
+            style={{ width: "20px", height: "20px", marginRight: "10px" }}
+          ></Image>
+          <Text style={{ color: "white" }}>早上8:00</Text>
+        </View>
+        <View
+          style={{
+            width: "50%",
+            height: 100,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgb(46, 115, 184)",
+            marginLeft: "5px",
+            borderRadius: "15px",
+          }}
+        >
+          {/* <Icon name="map-marker" size={20} color="gray" /> */}
+          <Image
+            source={"../assets/icon/wind.png"}
+            style={{ width: "20px", height: "20px", marginRight: "10px" }}
+          ></Image>
+          <Text style={{ color: "white" }}>22風速</Text>
+        </View>
+      </View>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          paddingRight: "20px",
+          paddingLeft: "20px",
+        }}
+      >
+        <View
+          style={{
+            width: "50%",
+            display: "flex",
+            height: 100,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgb(46, 115, 184)",
+            marginRight: "5px",
+            borderRadius: "15px",
+          }}
+        >
+          <Image
+            source={"../assets/icon/sun.png"}
+            style={{ width: "20px", height: "20px", marginRight: "10px" }}
+          ></Image>
+          <Text style={{ color: "white" }}>早上8:00</Text>
+        </View>
+        <View
+          style={{
+            width: "50%",
+            height: 100,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgb(46, 115, 184)",
+            marginLeft: "5px",
+            borderRadius: "15px",
+          }}
+        >
+          {/* <Icon name="map-marker" size={20} color="gray" /> */}
+          <Image
+            source={"../assets/icon/wind.png"}
+            style={{ width: "20px", height: "20px", marginRight: "10px" }}
+          ></Image>
+          <Text style={{ color: "white" }}>22風速</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   searchWrap: {
     position: "absolute",
