@@ -23,29 +23,7 @@ export default function Home2() {
   const BottomTab = createBottomTabNavigator();
   const Tab = createBottomTabNavigator();
   return (
-    <BottomTab.Navigator
-      // tabBar={(tabsProps) => (
-      //   <>
-      //     <BottomTabBar {...tabsProps} />
-      //   </>
-      // )}
-      initialRouteName="home"
-      // screenOptions={{
-      //   headerShown: false,
-      //   style: styles.customBottomtabsStyle,
-      //   tabBarActiveTintColor: colors.blackColor,
-      //   tabBarInactiveTintColor: "gray",
-      //   tabBarStyle: { backgroundColor: colors.themeColor },
-      //   tabBarShowLabel: false,
-      // }}
-    >
-      <BottomTab.Screen name="home" component={HomeScreen} options={{}} />
-      <BottomTab.Screen
-        name="SettingsScreen"
-        component={SettingsScreen}
-        options={{}}
-      />
-    </BottomTab.Navigator>
+    <View></View>
     // <NavigationContainer independent={true}>
     //   <Tab.Navigator initialRouteName="Home">
     //     <Tab.Screen

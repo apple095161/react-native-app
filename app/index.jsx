@@ -18,117 +18,90 @@ import * as Location from "expo-location";
 import Home from "./home";
 import HomeFooter from "./HomeFooter";
 import { EventRegister } from "react-native-event-listeners";
+import EventEmitter from "eventemitter3";
+import Icons from "react-native-vector-icons/FontAwesome";
+import Main from "./main";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Redirect } from "expo-router";
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
-  const fadeIn = useRef(new Animated.Value(0)).current;
-  const spin = fadeIn.interpolate({
+  const [showmenu, setShowmenu] = useState(false);
+
+  const translate = useRef(new Animated.Value(0)).current;
+
+  const myRef = useRef(null);
+
+  const animate = translate.interpolate({
     inputRange: [0, 1],
     outputRange: ["-250px", "0px"],
   });
+  function HomeScreen() {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Settings!</Text>
+      </View>
+    );
+  }
+  function SettingsScreen() {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Settings!</Text>
+      </View>
+    );
+  }
 
-  useEffect(() => {
-    const aaa = () => {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
-    };
-    aaa();
-    console.log(fadeIn);
-
-    const emit = () => {
-      EventRegister.addEventListener("myData", (data) => {
-        console.log(data);
-      });
-      return () => {
-        EventRegister.removeEventListener(emit);
-      };
-    };
-    // Animated.timing(fadeIn, {
-    //   toValue: 1,
-    //   duration: 1000,
-    //   useNativeDriver: true,
-    // }).start();
-
-    // setTimeout(() => {
-    //   Animated.timing(fadeIn, {
-    //     toValue: 0,
-    //     duration: 1000,
-    //     useNativeDriver: true,
-    //   }).start();
-    // }, 3000);
-  }, []);
-  // useEffect(() => {
-  //   // const fetchData = () => {
-  //   //   const url =
-  //   //     "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-067?Authorization=rdec-key-123-45678-011121314";
-  //   //   fetch(url)
-  //   //     .then((response) => response.json())
-  //   //     .then((json) => {
-  //   //       console.log(json);
-  //   //     })
-  //   //     .catch((error) => {
-  //   //       console.error(error);
-  //   //     });
-  //   // };
-  //   // const getLocation = async () => {
-  //   //   try {
-  //   //     let status = await Location.requestForegroundPermissionsAsync();
-  //   //     let { coords } = await Location.getCurrentPositionAsync();
-  //   //     console.log(coords, map);
-  //   //     // if (status !== "granted") {
-  //   //     //   setLocationError("Location permission denied");
-  //   //     //   return;
-  //   //     // }
-  //   //     // let location = await Location.getCurrentPositionAsync({});
-  //   //     // fetchWeatherData(location.coords.latitude, location.coords.longitude);
-  //   //   } catch (error) {
-  //   //     console.error("Error requesting location permission:", error);
-  //   //   }
-  //   // };
-  //   // getLocation();
-  //   setIsLoading(false);
-  // }, []);
-  // if (isLoading) {
-  //   return (
-  //     <SafeAreaView style={styles.loading}>
-  //       <ActivityIndicator size="large" />
-  //       <Text>氣象載入中....</Text>
-  //     </SafeAreaView>
-  //   );
-  // }
+  const BottomTab = createBottomTabNavigator();
+  const onClick = (value) => {
+    if (value) {
+      Animated.timing(translate, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+    Animated.timing(translate, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
-    <View style={{ position: "relative" }}>
-      <Animated.View
-        ref={fadeIn}
-        style={[
-          {
-            position: "absolute",
-            width: 250,
-            height: "100%",
-            zIndex: 888,
-            backgroundColor: "white",
-          },
-          {
-            transform: [{ translateX: spin }],
-          },
-        ]}
-      >
-        <SafeAreaView style={{}}>
-          <View>123</View>
-        </SafeAreaView>
-      </Animated.View>
-      <HomeFooter></HomeFooter>
-      <ImageBackground
-        source={require("../assets/images/123.jpeg")}
-        resizeMode="cover"
-        style={{ flex: 1, justifyContent: "center" }}
-      ></ImageBackground>
-      <Home></Home>
-    </View>
+    <Redirect href="/home3" />
+    // <View>
+    //   <BottomTab.Navigator
+    //     // tabBar={(tabsProps) => (
+    //     //   <>
+    //     //     <BottomTabBar {...tabsProps} />
+    //     //   </>
+    //     // )}
+    //     initialRouteName="main"
+    //     // screenOptions={{
+    //     //   headerShown: false,
+    //     //   style: styles.customBottomtabsStyle,
+    //     //   tabBarActiveTintColor: colors.blackColor,
+    //     //   tabBarInactiveTintColor: "gray",
+    //     //   tabBarStyle: { backgroundColor: colors.themeColor },
+    //     //   tabBarShowLabel: false,
+    //     // }}
+    //   >
+    //     <BottomTab.Screen name="main" component={HomeScreen} />
+    //     <BottomTab.Screen name="SettingsScreen" component={SettingsScreen} />
+    //   </BottomTab.Navigator>
+    // </View>
   );
 }
 const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: "rgb(46, 115, 184)",
+    zIndex: 888,
+    width: "100%",
+    height: 50,
+    justifyContent: "center",
+  },
   loading: {
     left: 0,
     right: 0,
